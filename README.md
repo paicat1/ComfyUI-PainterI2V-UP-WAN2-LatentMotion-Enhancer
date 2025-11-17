@@ -50,6 +50,9 @@
    - 选择 `samples`（原始尺寸）或 `samples_2x_upscale`（2 倍放大）作为 latent 输入
 4. 运行工作流，生成视频
 
+### 示例视频
+https://www.bilibili.com/video/BV167C2BzEdj/?share_source=copy_web&vd_source=031840a2cd8ca1548c52c59a0a9fb6a5
+
 ### 场景参数推荐
 | 场景类型 | 推荐参数组合 | 效果说明 |
 |----------|--------------|----------|
