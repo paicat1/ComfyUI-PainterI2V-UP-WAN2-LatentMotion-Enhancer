@@ -57,10 +57,6 @@
 | 风景/纹理动态 | `manual_scene=自然细节` + `noise_strength=0.15-0.2` + `noise_target=仅环境细节` | 增强环境动态细节（如烟雾、水流） |
 | 通用场景 | `manual_scene=自动匹配` + `motion_amplitude=1.1` + `time_smooth_strength=0.2` | 平衡运动感与画面稳定性 |
 
-### 工作流截图（占位）
-![工作流示例](https://via.placeholder.com/800x450?text=ComfyUI+Workflow+Screenshot)  
-*（请替换为实际工作流截图，建议展示完整的输入-配置-输出连接关系）*
-
 ## 参数速览
 | 参数分类 | 核心参数 | 默认值 | 推荐范围 |
 |----------|----------|--------|----------|
