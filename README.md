@@ -1,85 +1,119 @@
 # PainterI2V-up WAN2.2 LatentMotion Enhancer by paicat1
 
-本节点受到动画小子大佬（GitHub：[princepainter](https://github.com/princepainter)）开发的 PainterI2V 节点（项目地址：[https://github.com/princepainter/ComfyUI-PainterI2V](https://github.com/princepainter/ComfyUI-PainterI2V)）的启发，是在其基础上进行的后续开发工作。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
+[![ComfyUI Compatible](https://img.shields.io/badge/ComfyUI-Compatible-green.svg)](https://github.com/comfyanonymous/ComfyUI)
 
-动画小子大佬的 PainterI2V 节点开创性地完成了潜空间中强化帧间动态的重要工作，有效解决了 Wan2.2 模型配合 4 步 LoRA（如 lightx2v）时的慢动作问题，为图生视频的动态效果提升奠定了关键基础。
+> 专为 WAN2.2 优化的图生视频潜空间运动强化节点，基于动画小子大佬的 PainterI2V 核心思路深化开发，提供更精细的动态效果控制。
 
-本节点在继承其核心思路的前提下，进一步探索了潜空间中运动优化的可能性，针对运动幅度、连贯性及场景适应性等方面进行了深化调整，旨在为图生视频任务提供更精细、更符合实际需求的动态效果控制。
+## 项目简介
+本节点受到动画小子大佬（GitHub：[princepainter](https://github.com/princepainter)）开发的 [PainterI2V](https://github.com/princepainter/ComfyUI-PainterI2V) 节点启发，是其后续优化版本。
 
-> 专为 WAN2.2 优化的图生视频潜空间运动强化节点，解决传统 I2V 运动僵硬、场景适配差、细节缺失等问题，通过潜空间直接调控运动信息，实现更自然、可控的视频生成效果。
-> 作者：paicat1（GitHub：[paicat1](https://github.com/paicat1)）
+动画小子大佬开创性地实现了**潜空间帧间动态强化**，有效解决了 WAN2.2 模型配合 4 步 LoRA（如 lightx2v）时的慢动作问题。本节点在此基础上，进一步探索潜空间运动优化的可能性，新增分区域增强、场景自适应噪声、动态模糊等功能，让图生视频的动态效果更自然、更可控。
+
+- 作者：paicat1（GitHub：[paicat1](https://github.com/paicat1)）
+- 原项目：[ComfyUI-PainterI2V](https://github.com/princepainter/ComfyUI-PainterI2V)（感谢动画小子大佬的开源贡献）
 
 ## 核心亮点
-- **WAN2.2 深度适配**：针对 WAN2.2 模型特性优化，完美兼容其图生视频工作流，避免版本兼容问题。
-- **潜空间运动强化**：核心基于 `LatentMotion` 技术，在低维潜空间直接调控运动幅度、动态细节，计算高效且效果精准。
-- **多维度可控性**：支持分区域运动增强、场景自适应噪声注入、动态模糊调节，满足不同创作需求。
-- **场景智能适配**：手动/自动场景匹配（动态主体/自然细节），绕开 prompt 提取误差，适配更多使用场景。
+- ✅ **WAN2.2 深度适配**：完美兼容 WAN2.2 图生视频工作流，无版本兼容问题
+- ✅ **潜空间精准调控**：基于 `LatentMotion` 技术，直接在低维潜空间优化运动信息
+- ✅ **多维度动态增强**：支持分区域运动放大、场景自适应噪声、帧间平滑与动态模糊
+- ✅ **场景智能匹配**：手动/自动切换场景类型（动态主体/自然细节），绕开 prompt 提取误差
+- ✅ **双分辨率输出**：同时提供原始尺寸与 2 倍放大 latent，适配不同生成需求
 
-## 安装说明
-1. 下载本节点代码文件（建议命名为 `PainterI2V-up_WAN2.2_LatentMotion_Enhancer_by_paicat1.py`）。
-2. 将文件复制到 ComfyUI 的 `custom_nodes` 目录下。
-3. 重启 ComfyUI，节点将自动加载，在 `Wan Video/Experimental` 分类中可找到。
+## 安装指南
+### 前置依赖
+- 已安装 [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
+- 已部署 WAN2.2 图生视频模型及配套 VAE
+- Python 3.8+
 
-## 核心功能
-| 功能模块 | 作用说明 |
-|----------|----------|
-| 潜空间运动幅度增强 | 直接在潜空间放大运动差异，提升视频动态感，同时保护画面亮度稳定。 |
-| 分区域运动强化 | 基于运动掩码或自动检测，针对性增强主体（人物/动物）或环境细节的运动效果。 |
-| 场景自适应噪声 | 根据场景类型（动态主体/自然细节）匹配不同频率噪声，优化动态细节表现。 |
-| 时间平滑与动态模糊 | 减少帧间抖动，模拟真实运动模糊，提升视频流畅度。 |
-| 2倍 latent 上采样 | 输出原始尺寸与2倍放大双 latent，适配不同分辨率生成需求。 |
-
-## 参数说明
-### 必填参数
-| 参数名 | 类型 | 默认值 | 范围 | 用途说明 |
-|--------|------|--------|------|----------|
-| positive | CONDITIONING | - | - | 正向提示词条件，控制视频内容风格与主体。 |
-| negative | CONDITIONING | - | - | 反向提示词条件，过滤不需要的画面元素。 |
-| vae | VAE | - | - | 用于图像与潜空间的编码转换，建议使用与 WAN2.2 配套的 VAE。 |
-| width / height | INT | 832 / 480 | 16-4096（步长16） | 生成视频的宽高，需符合 WAN2.2 模型输入要求。 |
-| length | INT | 81 | 1-4096（步长4） | 视频帧数，步长4适配 WAN2.2 模型的时序处理逻辑。 |
-| batch_size | INT | 1 | 1-4096 | 批量生成数量，根据显卡显存调整。 |
-| motion_amplitude | FLOAT | 1.15 | 1.0-2.0（步长0.05） | 整体运动幅度增强系数，数值越大动态感越强。 |
-
-### 场景与噪声参数
-| 参数名 | 类型 | 默认值 | 选项/范围 | 用途说明 |
-|--------|------|--------|-----------|----------|
-| manual_scene | COMBO | 自动匹配 | 自动匹配/动态主体（人物/动物）/自然细节（风景/纹理） | 手动指定场景类型，提升噪声与运动适配精度。 |
-| noise_target | COMBO | 全局（含环境） | 全局（含环境）/仅动作动态/仅环境细节 | 控制噪声注入的目标区域，精准优化动态细节。 |
-| noise_strength | FLOAT | 0.0 | 0.0-0.5（步长0.01） | 噪声注入强度，增加画面动态细节（建议0.05-0.2）。 |
-| noise_decay_rate | FLOAT | 0.8 | 0.5-1.0（步长0.05） | 噪声随时间衰减系数，避免后期画面混乱。 |
-
-### 进阶控制参数
-| 参数名 | 类型 | 默认值 | 范围 | 用途说明 |
-|--------|------|--------|------|----------|
-| motion_threshold | FLOAT | 0.3 | 0.1-1.0（步长0.05） | 运动掩码生成阈值，数值越小检测到的运动区域越广。 |
-| action_amplitude_boost | FLOAT | 1.0 | 1.0-2.0（步长0.1） | 运动区域增强系数，针对性放大主体运动幅度。 |
-| time_smooth_strength | FLOAT | 0.0 | 0.0-0.5（步长0.05） | 帧间平滑强度，减少画面抖动（建议0.1-0.3）。 |
-| motion_blur_strength | FLOAT | 0.0 | 0.0-0.3（步长0.05） | 动态模糊强度，模拟真实运动轨迹（建议0.05-0.15）。 |
-
-### 可选输入
-| 参数名 | 类型 | 用途说明 |
-|--------|------|----------|
-| clip_vision_output | CLIP_VISION_OUTPUT | 输入 CLIP 视觉特征，增强内容与提示词的对齐度。 |
-| start_image | IMAGE | 核心输入！图生视频的起始帧（必填，否则报错）。 |
-| motion_mask | MASK | 自定义运动区域掩码，仅增强掩码覆盖区域的运动。 |
-| keyframe_image | IMAGE | 关键帧图像，可用于强化特定帧的内容特征。 |
-| keyframe_frame_idx | INT | 关键帧在序列中的位置（适配 length 调整）。 |
+### 安装步骤
+1. 克隆本仓库（或直接下载代码文件）：
+   ```bash
+   git clone https://github.com/paicat1/ComfyUI-PainterI2V-up-WAN2.2-LatentMotion-Enhancer.git
+   ```
+2. 将节点文件 `PainterI2V-up_WAN2.2_LatentMotion_Enhancer_by_paicat1.py` 复制到 ComfyUI 的 `custom_nodes` 目录下
+3. 重启 ComfyUI，节点将自动加载至 `Wan Video/Experimental` 分类中
 
 ## 使用示例
-1. 准备 `start_image`（起始帧图像）、`VAE`（与 WAN2.2 配套）。
-2. 连接 `positive`/`negative` 提示词节点，设置视频宽高、帧数。
-3. 根据场景类型选择 `manual_scene`（如“动态主体”用于人物视频）。
-4. 调整 `motion_amplitude`（建议1.1-1.3）和 `noise_strength`（建议0.05-0.15）。
-5. 输出 `positive`/`negative` 连接到 WAN2.2 生成节点，`samples`/`samples_2x_upscale` 作为 latent 输入。
+### 基础工作流
+1. 准备输入资源：
+   - `start_image`：图生视频的起始帧（必填）
+   - `VAE`：与 WAN2.2 配套的 VAE 模型
+   - `positive/negative`：提示词条件节点
+2. 配置节点参数：
+   - 基础参数：设置视频宽高（如 832x480）、帧数（如 81）、批量大小
+   - 核心参数：`motion_amplitude=1.2`（运动幅度）、`manual_scene=动态主体`（场景类型）
+   - 优化参数：`noise_strength=0.1`（噪声强度）、`motion_blur_strength=0.05`（动态模糊）
+3. 连接生成节点：
+   - 将节点输出的 `positive`/`negative` 连接到 WAN2.2 生成节点
+   - 选择 `samples`（原始尺寸）或 `samples_2x_upscale`（2 倍放大）作为 latent 输入
+4. 运行工作流，生成视频
+
+### 场景参数推荐
+| 场景类型 | 推荐参数组合 | 效果说明 |
+|----------|--------------|----------|
+| 人物/动物动画 | `manual_scene=动态主体` + `motion_amplitude=1.2-1.3` + `action_amplitude_boost=1.3` | 强化主体运动幅度，保持肢体连贯 |
+| 风景/纹理动态 | `manual_scene=自然细节` + `noise_strength=0.15-0.2` + `noise_target=仅环境细节` | 增强环境动态细节（如烟雾、水流） |
+| 通用场景 | `manual_scene=自动匹配` + `motion_amplitude=1.1` + `time_smooth_strength=0.2` | 平衡运动感与画面稳定性 |
+
+### 工作流截图（占位）
+![工作流示例](https://via.placeholder.com/800x450?text=ComfyUI+Workflow+Screenshot)  
+*（请替换为实际工作流截图，建议展示完整的输入-配置-输出连接关系）*
+
+## 参数速览
+| 参数分类 | 核心参数 | 默认值 | 推荐范围 |
+|----------|----------|--------|----------|
+| 基础配置 | width/height | 832/480 | 16-4096（步长16） |
+| 基础配置 | length | 81 | 1-4096（步长4） |
+| 运动控制 | motion_amplitude | 1.15 | 1.0-1.3 |
+| 运动控制 | action_amplitude_boost | 1.0 | 1.0-1.5 |
+| 场景适配 | manual_scene | 自动匹配 | 动态主体/自然细节/自动匹配 |
+| 噪声优化 | noise_strength | 0.0 | 0.05-0.2 |
+| 平滑优化 | time_smooth_strength | 0.0 | 0.1-0.3 |
+| 模糊优化 | motion_blur_strength | 0.0 | 0.05-0.15 |
+
+完整参数说明见 [详细文档](docs/参数说明.md)（可选：如需拆分详细文档可新增此目录）
 
 ## 注意事项
-1. **start_image 必填**：节点依赖起始帧生成运动序列，未提供将直接报错。
-2. **WAN2.2 专属**：仅适配 WAN2.2 模型，其他版本可能出现运动异常或兼容性问题。
-3. 显存占用：高分辨率（如 1024x768）+ 高帧数（如 200+）需较大显存，建议根据显卡性能调整参数。
-4. 调参建议：先固定 `motion_amplitude=1.2`，再根据场景调整噪声和模糊参数，避免参数叠加导致画面混乱。
+1. **必填参数**：`start_image` 为核心输入，未提供将直接报错
+2. **模型兼容性**：仅适配 WAN2.2 模型，其他版本可能出现运动异常
+3. 显存占用：高分辨率（如 1024x768）+ 高帧数（如 200+）建议使用 12GB+ 显存显卡
+4. 调参原则：避免同时调高 `motion_amplitude` 和 `noise_strength`，防止画面混乱
+5. 日志查看：运行时可通过 ComfyUI 控制台查看节点输出日志，辅助调参
 
 ## 许可证
-本节点基于 MIT 许可证开源，可自由使用、修改和分发，保留原作者（动画小子 princepainter、后续开发 paicat1）署名即可。
+本项目基于 [MIT 许可证](LICENSE) 开源，使用时需保留原作者（动画小子 princepainter、后续开发 paicat1）署名。
+
+- 可自由使用、修改、分发本节点
+- 禁止用于商业用途时移除作者署名
+- 作者不对使用本节点产生的任何损失承担责任
+
+## 贡献指南
+欢迎通过以下方式参与项目贡献：
+1. Fork 本仓库
+2. 创建特性分支（`git checkout -b feature/xxx`）
+3. 提交修改（`git commit -m 'Add xxx feature'`）
+4. 推送分支（`git push origin feature/xxx`）
+5. 发起 Pull Request
+
+贡献方向：
+- 新增场景适配类型
+- 优化运动控制算法
+- 降低显存占用
+- 补充多语言文档
+
+## 问题反馈
+如遇到使用问题或功能建议，可通过以下方式反馈：
+1. GitHub Issues：[提交 Issue](https://github.com/paicat1/ComfyUI-PainterI2V-up-WAN2.2-LatentMotion-Enhancer/issues)
+2. 联系作者：通过 GitHub 主页留言
+
+反馈时建议提供：
+- 完整的报错日志
+- 工作流截图
+- 所用参数配置
+- 显卡型号与显存大小
 
 ---
+
+如果觉得这个节点对你有帮助，欢迎点亮 ⭐️ Star 支持一下～
